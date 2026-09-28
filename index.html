@@ -60,6 +60,7 @@ p{margin:0}
 .ex:first-of-type{border-top:0}
 .ex .name{flex:1;min-width:0}
 .ex .name b{display:block;font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex .name b a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--blue);padding-bottom:1px}
 .ex .name span{font-size:13px;color:var(--muted)}
 input[type=number],input[type=date],input[type=text]{
   font:15px/1 inherit;color:var(--text);background:var(--canvas);border:1px solid var(--border);
@@ -146,13 +147,14 @@ var P1_START="2026-09-28", P1_END="2026-10-25", WEDDING="2026-10-25",
     P2_START="2026-10-26", P2_END="2026-12-20";
 
 /* ---------------- plan ---------------- */
-function ex(n,s,w){ return {n:n,s:s,w:w}; }
+var MS="https://www.muscleandstrength.com/exercises/";
+function ex(n,s,w,u){ return {n:n,s:s,w:w,u:u?MS+u:null}; }
 var LIFTS={
-  A:{name:"Strength A",ex:[ex("Goblet squat","3 × 10",14),ex("Flat bench press","3 × 8",10),ex("One-arm row","3 × 10 / side",12),ex("Overhead press, seated","3 × 8",7),ex("Romanian deadlift","3 × 10",12),ex("Plank","3 × 40 sec",null)]},
-  B:{name:"Strength B",ex:[ex("Reverse lunge","3 × 8 / side",8),ex("Bent-over row","3 × 10",10),ex("Incline bench press","3 × 10",9),ex("Pullover","3 × 12",10),ex("Incline curl","3 × 12",8),ex("Triceps extension","3 × 12",8),ex("Side plank","2 × 30 sec",null)]},
-  UA:{name:"Upper A",ex:[ex("Flat bench press","4 × 8",10),ex("Overhead press, seated","3 × 8",7),ex("One-arm row","4 × 10",12),ex("Lateral raise","3 × 15",5),ex("Incline curl","3 × 10",8),ex("Lying triceps ext.","3 × 12",8)]},
-  UB:{name:"Upper B",ex:[ex("Bent-over row","4 × 8",12),ex("Incline bench press","4 × 10",9),ex("Chest-supported row","3 × 12",10),ex("Pullover","3 × 12",10),ex("Rear-delt fly","3 × 15",5),ex("Hammer curl","3 × 12",8)]},
-  LO:{name:"Lower + core",ex:[ex("Goblet squat","4 × 10",16),ex("Romanian deadlift","4 × 8",14),ex("Bulgarian split squat","3 × 10 / side",8),ex("Hip thrust","3 × 12",16),ex("Calf raise","3 × 15",12),ex("Plank","3 × 60 sec",null)]}
+  A:{name:"Strength A",ex:[ex("Goblet squat","3 × 10",14,"dumbbell-goblet-squat"),ex("Flat bench press","3 × 8",10,"dumbbell-bench-press.html"),ex("One-arm row","3 × 10 / side",12,"one-arm-dumbbell-row.html"),ex("Overhead press","3 × 8",7,"seated-dumbbell-press.html"),ex("Romanian deadlift","3 × 10",12,"dumbbell-stiff-leg-deadlift.html"),ex("Plank","3 × 40 sec",null,"hover.html")]},
+  B:{name:"Strength B",ex:[ex("Reverse lunge","3 × 8 / side",8,"dumbbell-rear-lunge.html"),ex("Bent-over row","3 × 10",10,"bent-over-dumbbell-row.html"),ex("Incline bench press","3 × 10",9,"incline-dumbbell-bench-press.html"),ex("Pullover","3 × 12",10,"dumbbell-pullover.html"),ex("Incline curl","3 × 12",8,"incline-dumbbell-curl.html"),ex("Triceps extension","3 × 12",8,"two-arm-dumbbell-extension.html"),ex("Side plank","2 × 30 sec",null,"side-hover.html")]},
+  UA:{name:"Upper A",ex:[ex("Flat bench press","4 × 8",10,"dumbbell-bench-press.html"),ex("Overhead press","3 × 8",7,"seated-dumbbell-press.html"),ex("One-arm row","4 × 10",12,"one-arm-dumbbell-row.html"),ex("Lateral raise","3 × 15",5,"dumbbell-lateral-raise.html"),ex("Incline curl","3 × 10",8,"incline-dumbbell-curl.html"),ex("Lying triceps ext.","3 × 12",8,"lying-dumbbell-extension.html")]},
+  UB:{name:"Upper B",ex:[ex("Bent-over row","4 × 8",12,"bent-over-dumbbell-row.html"),ex("Incline bench press","4 × 10",9,"incline-dumbbell-bench-press.html"),ex("Chest-supported row","3 × 12",10,"chest-supported-dumbbell-row"),ex("Pullover","3 × 12",10,"dumbbell-pullover.html"),ex("Rear-delt fly","3 × 15",5,"bent-over-dumbbell-reverse-fly.html"),ex("Hammer curl","3 × 12",8,"standing-hammer-curl.html")]},
+  LO:{name:"Lower + core",ex:[ex("Goblet squat","4 × 10",16,"dumbbell-goblet-squat"),ex("Romanian deadlift","4 × 8",14,"dumbbell-stiff-leg-deadlift.html"),ex("Bulgarian split squat","3 × 10 / side",8,"one-leg-dumbbell-squat-aka-bulgarian-squat.html"),ex("Hip thrust","3 × 12",16,"barbell-hip-thrust"),ex("Calf raise","3 × 15",12,"standing-one-leg-calf-raise-with-dumbbell.html"),ex("Plank","3 × 60 sec",null,"hover.html")]}
 };
 var RUNS={
   easy:{name:"Easy run",detail:"6 km, conversational pace",km:6},
@@ -291,12 +293,13 @@ function viewToday(){
   h+='<div class="card accent">';
   if(ses.kind==="lift"){
     var L=LIFTS[ses.lift];
-    h+='<h3>'+esc(L.name)+'</h3><p class="sub">Rest 90 seconds between sets'+(ses.extra?" · "+esc(ses.extra):"")+'</p><div style="height:12px"></div>';
+    h+='<h3>'+esc(L.name)+'</h3><p class="sub">Rest 90 seconds between sets'+(ses.extra?" · "+esc(ses.extra):"")+' · tap a name for the technique video</p><div style="height:12px"></div>';
     h+='<div class="row" style="justify-content:flex-end;margin-bottom:-4px"><div style="flex:1"></div><span class="unit">kg</span><span class="unit">reps</span></div>';
     L.ex.forEach(function(e,i){
       var log=(entry.ex||{})[e.n]||{};
       var w=log.w!==undefined?log.w:(e.w===null?"":lastWeight(e.n,e.w));
-      h+='<div class="ex"><div class="name"><b>'+esc(e.n)+'</b><span>'+esc(e.s)+'</span></div>'+
+      var label=e.u?'<a href="'+e.u+'" target="_blank" rel="noopener">'+esc(e.n)+'</a>':esc(e.n);
+      h+='<div class="ex"><div class="name"><b>'+label+'</b><span>'+esc(e.s)+'</span></div>'+
          '<input class="num" type="number" inputmode="decimal" step="0.5" min="0" data-ex="'+esc(e.n)+'" data-f="w" value="'+(w===""?"":w)+'" placeholder="'+(e.w===null?"–":"")+'" aria-label="'+esc(e.n)+' weight in kg"'+(e.w===null?" disabled":"")+'>'+
          '<input class="num" type="number" inputmode="numeric" step="1" min="0" data-ex="'+esc(e.n)+'" data-f="r" value="'+(log.r!==undefined?log.r:"")+'" placeholder="–" aria-label="'+esc(e.n)+' reps">'+
          '</div>';
@@ -441,10 +444,9 @@ function render(){
 function bind(){
   [].forEach.call(document.querySelectorAll(".day"),function(b){ b.onclick=function(){ sel=b.dataset.d; render(); }; });
 
-  var mark=document.getElementById("mark");
-  if(mark) mark.onclick=function(){
+  function stash(){
     var s=load(), ses=sessionFor(sel), e=s.sessions[sel]||{};
-    e.kind=ses.kind; e.id=ses.id; e.done=true;
+    e.kind=ses.kind; e.id=ses.id; if(e.done===undefined) e.done=false;
     if(ses.kind==="lift"){
       e.ex=e.ex||{};
       [].forEach.call(document.querySelectorAll("[data-ex]"),function(inp){
@@ -452,10 +454,16 @@ function bind(){
         if(inp.value!==""){ e.ex[n][inp.dataset.f]=+inp.value; if(inp.dataset.f==="w") s.weights[n]=+inp.value; }
       });
     } else {
-      var k=document.getElementById("rk").value, t=document.getElementById("rt").value;
-      if(k!=="") e.km=+k; if(t!=="") e.min=+t;
+      var k=document.getElementById("rk"), t=document.getElementById("rt");
+      if(k&&k.value!=="") e.km=+k.value; if(t&&t.value!=="") e.min=+t.value;
     }
-    s.sessions[sel]=e; save(); render();
+    s.sessions[sel]=e; save();
+  }
+  [].forEach.call(document.querySelectorAll("[data-ex],#rk,#rt"),function(inp){ inp.onchange=stash; });
+
+  var mark=document.getElementById("mark");
+  if(mark) mark.onclick=function(){
+    stash(); var s=load(); s.sessions[sel].done=true; save(); render();
   };
   var undo=document.getElementById("undo");
   if(undo) undo.onclick=function(){ var s=load(); if(s.sessions[sel]){ s.sessions[sel].done=false; save(); } render(); };
